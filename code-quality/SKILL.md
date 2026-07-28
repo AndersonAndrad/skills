@@ -1,0 +1,89 @@
+---
+name: code-quality
+description: Reviews new or modified code for readability, maintainability, duplication, unnecessary complexity, naming, typing, boundaries, and consistency with existing project conventions. Use after every production code change.
+---
+
+# Code Quality Review
+
+Review all code created or modified during the current task.
+
+## Project consistency
+
+Before suggesting a new pattern:
+
+1. Search for similar implementations.
+2. Follow the existing project organization.
+3. Reuse existing helpers and abstractions when appropriate.
+4. Do not introduce a new convention without a clear benefit.
+
+## Readability
+
+Verify that:
+
+- Names communicate business intent.
+- Functions have one clear responsibility.
+- Complex conditions are understandable.
+- Control flow is not unnecessarily nested.
+- Comments explain decisions, not obvious syntax.
+- Constants replace unexplained magic values.
+- Public behavior is understandable from the code.
+
+## Complexity
+
+Look for:
+
+- Functions doing unrelated work
+- Excessive branching
+- Deep nesting
+- Repeated conditions
+- Duplicate transformations
+- Premature abstractions
+- Generic utilities used by only one call site
+- Unnecessary indirection
+- Hidden side effects
+
+Prefer simple and explicit code over clever code.
+
+## Types and contracts
+
+Verify that:
+
+- Types are specific and meaningful.
+- Unsafe casts are avoided.
+- Null and undefined cases are handled.
+- Public contracts are not silently changed.
+- Return values and failure behavior are predictable.
+- DTOs and interfaces represent their real domain purpose.
+
+Do not use broad types such as `any`, generic maps, or untyped objects when a
+more accurate type can reasonably be defined.
+
+## Duplication
+
+Remove duplication only when the duplicated behavior represents the same
+business concept.
+
+Do not merge code merely because it looks structurally similar.
+
+## Scope control
+
+Confirm that the diff contains only changes required for the task.
+
+Flag:
+
+- Unrelated refactors
+- Unrequested formatting changes
+- Dependency upgrades
+- Renaming outside the affected scope
+- Public API changes
+- Behavior changes without tests
+
+## Completion criteria
+
+The review is complete only when:
+
+- The code follows existing patterns.
+- The implementation is understandable.
+- Unnecessary complexity has been removed.
+- Relevant contracts remain stable.
+- No unrelated changes remain.
