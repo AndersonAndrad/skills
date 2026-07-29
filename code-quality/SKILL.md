@@ -78,6 +78,40 @@ Flag:
 - Public API changes
 - Behavior changes without tests
 
+### Naming and cognitive load
+
+Check:
+
+* Are names understandable without inspecting their types?
+* Are parameters named after their domain meaning?
+* Are abbreviations unnecessary or project-specific?
+* Are single-letter names used for values with business meaning?
+* Are generic names such as `data`, `item`, `value`, `object`, or `result`
+  hiding more specific concepts?
+* Does the reader need to search another file to understand an identifier?
+* Do names distinguish similar concepts clearly?
+* Are names still accurate after the implementation changed?
+
+Prefer names that make the code understandable at first glance.
+
+For example:
+
+```ts
+const loadList = async (filter: FitbankWebhookAuditFilter) => {}
+```
+
+is clearer than:
+
+```ts
+const loadList = async (f: FitbankWebhookAuditFilter) => {}
+```
+
+Do not request longer names mechanically.
+
+Accept established abbreviations such as `id`, `url`, `api`, `http`, and
+project-standard terms when they are clearer than their expanded forms.
+
+
 ## Completion criteria
 
 The review is complete only when:
