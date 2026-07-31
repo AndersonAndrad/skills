@@ -30,6 +30,62 @@ Check that higher-level business rules do not depend unnecessarily on:
 - UI concerns
 - Environment access scattered throughout the code
 
+## Authentication boundary architecture
+
+The authentication layer must expose a stable internal contract to the rest of
+the application.
+
+The architecture should separate:
+
+### Credential validation
+
+Responsible for:
+
+* Reading the credential
+* Verifying authenticity
+* Validating required claims
+* Validating token state
+* Rejecting invalid credentials
+
+### Authenticated context creation
+
+Responsible for:
+
+* Mapping validated claims into an internal type
+* Removing unnecessary raw token data
+* Establishing the canonical principal representation
+* Attaching the context to the request or execution context
+
+### Authorization policy
+
+Responsible for:
+
+* Roles
+* Permissions
+* Tenant boundaries
+* Ownership
+* Resource-specific access decisions
+
+### Business execution
+
+Responsible for the operation after access has been granted.
+
+Controllers should orchestrate these components, not recreate them.
+
+Avoid architecture where each controller:
+
+* Reads different request properties
+* Interprets raw JWT claims
+* Checks roles inline
+* Decides authentication failure semantics
+* Duplicates ownership checks
+* Builds its own authenticated-user shape
+
+When the same authenticated actor appears under multiple request properties,
+treat this as an architectural inconsistency that requires consolidation or an
+explicit compatibility plan.
+
+
 ## Contracts
 
 Before changing a public contract, inspect:
