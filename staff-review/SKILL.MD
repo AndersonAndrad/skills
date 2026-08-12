@@ -781,3 +781,482 @@ Do not:
 
 The purpose of this review is to discover what ordinary implementation and
 automated validation may have missed.
+
+## GitHub-style inline review
+
+The final review output must resemble a GitHub pull request review.
+
+Whenever a finding can be associated with a specific code location, report it
+as an inline review comment using:
+
+* File path
+* Start line
+* End line
+* Severity
+* Review comment
+* Practical impact
+* Suggested correction
+* Suggested validation
+
+Use the smallest line range that contains enough context to understand the
+finding.
+
+Prefer:
+
+```text
+application/users/users.controller.ts
+Lines 42-47
+```
+
+Instead of:
+
+```text
+application/users/users.controller.ts
+Lines 1-250
+```
+
+Do not reference the entire file when the finding belongs to a specific
+condition, function, decorator, parameter, query, or statement.
+
+### Line reference source
+
+Use line numbers from the current diff or current file content.
+
+Before reporting a line:
+
+1. Open the current version of the file.
+2. Confirm the relevant line range.
+3. Confirm that the referenced code still exists.
+4. Confirm that the line range includes the problematic implementation.
+5. Avoid referencing stale line numbers from an earlier version of the diff.
+
+When exact line numbers cannot be determined, use the nearest stable code
+location:
+
+```text
+application/users/users.controller.ts
+Function: updateUser
+Near: inline role validation
+```
+
+Do not invent line numbers.
+
+### Review comment format
+
+Use the following structure for every inline finding:
+
+```text
+### `path/to/file.ts`
+
+**Lines:** 42-47  
+**Severity:** High
+
+**Review comment**
+
+The authorization rule is implemented inline in this controller even though
+the same `super_admin` policy exists in another controller. This creates two
+independent copies of the same security rule.
+
+The duplicated implementations already use different authenticated-context
+properties: this controller reads `request.backOfficeClient`, while the
+existing guard reads `request.backofficeUser`.
+
+**Impact**
+
+A future endpoint may copy either implementation, causing inconsistent access
+control, incorrect denials, or an authorization bypass if one request property
+is populated differently.
+
+**Suggested correction**
+
+Define one canonical authenticated backoffice context, update the existing
+`BackofficeSuperAdminGuard` to read that context, and apply the guard with
+`@UseGuards(BackofficeSuperAdminGuard)` to every `super_admin`-only endpoint.
+
+Remove the inline role comparisons from the controllers.
+
+**Suggested validation**
+
+- Add isolated tests for the guard.
+- Verify missing authentication context returns the expected authentication
+  error.
+- Verify a non-super-admin user is rejected.
+- Verify a super administrator is allowed.
+- Verify legacy request properties are not trusted.
+- Verify both controllers use the same guard.
+```
+
+### Concise GitHub comment
+
+The review comment itself should be concise enough to appear as an inline
+GitHub comment.
+
+Do not repeat the complete review report inside every finding.
+
+The comment should explain:
+
+1. What is wrong
+2. Why it matters
+3. What should change
+
+Use the Impact and Suggested correction sections for additional detail.
+
+### Suggested patch
+
+When the correction is local and can be represented accurately, include an
+optional suggested patch.
+
+Use:
+
+````text
+**Suggested patch**
+
+```suggestion
+const loadAuditList = async (
+    filter: FitbankWebhookAuditFilter,
+) => {
+````
+
+````
+
+Only provide a suggested patch when:
+
+- The exact correction is known.
+- The patch does not depend on unanswered business rules.
+- The patch does not hide additional required changes.
+- The replacement is valid for the referenced line range.
+- The correction is small enough for an inline suggestion.
+
+Do not provide a misleading one-line patch for an architectural issue that
+requires changes across multiple files.
+
+For larger corrections, provide a proposed implementation outline instead.
+
+### Multi-file findings
+
+When one defect spans multiple files, create one primary finding and list the
+related locations.
+
+Example:
+
+```text
+### Primary location
+
+`application/audit/controllers/webhook-audit.controller.ts`
+
+**Lines:** 38-44
+
+### Related locations
+
+- `application/audit/controllers/balance-audit.controller.ts`, lines 31-37
+- `infrastructure/auth/guards/backoffice-super-admin.guard.ts`, lines 18-25
+- `infrastructure/auth/strategies/backoffice.strategy.ts`, lines 51-62
+````
+
+The primary location should be the most useful place for the developer to begin
+the correction.
+
+Do not create several identical comments for the same root cause.
+
+Create separate comments only when each location has a distinct defect or
+requires a different correction.
+
+### Duplicated code
+
+When reporting duplication:
+
+1. Identify every relevant copy.
+2. Determine which implementation is canonical, if any.
+3. Verify whether the copies already behave differently.
+4. Identify the underlying rule being duplicated.
+5. Recommend the correct reusable abstraction.
+6. Avoid recommending abstraction for trivial structural similarity.
+
+For duplicated authorization logic, always trace:
+
+* Where authentication is validated
+* Which authenticated context is injected
+* Which request property is canonical
+* Which guards already exist
+* Which controllers repeat the policy
+* Whether the duplicated copies use different identity sources
+* Whether isolated policy tests exist
+
+A duplicated security rule must not be reported only as a DRY or maintainability
+issue.
+
+Report the authorization-consistency impact.
+
+### Finding title
+
+Every finding must have a short, actionable title.
+
+Examples:
+
+* `Centralize the duplicated super-admin authorization policy`
+* `Preserve false values when building the audit filters`
+* `Add a timeout to the external provider request`
+* `Avoid detaching the background operation from request cancellation`
+* `Use the authenticated JWT context instead of request input`
+* `Add regression coverage for duplicate webhook delivery`
+
+Avoid vague titles:
+
+* `Improve this code`
+* `Possible issue`
+* `Refactor`
+* `Code quality`
+* `Check this`
+
+### Severity label
+
+Use exactly one:
+
+* Critical
+* High
+* Medium
+* Low
+
+Severity must be based on practical impact, not on the amount of code affected.
+
+### GitHub-style grouping
+
+Order comments by:
+
+1. Critical
+2. High
+3. Medium
+4. Low
+
+Within the same severity, order comments by file path and line number.
+
+### Review summary comments
+
+Not every finding belongs to a specific line.
+
+Use a general PR comment only for concerns such as:
+
+* Missing deployment strategy
+* Missing rollback plan
+* Repository-wide architecture inconsistency
+* Missing documentation spanning several endpoints
+* Missing environment configuration
+* Missing observability strategy
+* Missing migration plan
+* Missing test category across the complete change
+
+General comments must use:
+
+```text
+## General PR comment
+
+**Severity:** High  
+**Area:** Deployment and rollback
+
+The migration removes a column before all application instances are guaranteed
+to stop reading it. During a rolling deployment, old instances may fail while
+the migration is already active.
+
+**Suggested correction**
+
+Use a two-phase expand-and-contract migration.
+```
+
+Do not use a general comment when the issue has a clear inline location.
+
+## Review output contract
+
+The final response must use the following structure:
+
+```text
+# Staff PR Review
+
+## Overall assessment
+
+Briefly summarize the safety and quality of the PR.
+
+## Recommendation
+
+Use exactly one:
+
+- Request changes
+- Comment
+- Approve
+
+Use `Request changes` when unresolved Critical or High findings exist.
+
+Use `Comment` when only Medium or Low findings remain and they do not block the
+change.
+
+Use `Approve` only when no material findings remain.
+
+## Review comments
+
+### `path/to/file.ts`
+
+#### Centralize the duplicated authorization policy
+
+**Lines:** 42-47  
+**Severity:** High
+
+**Review comment**
+
+...
+
+**Impact**
+
+...
+
+**Suggested correction**
+
+...
+
+**Suggested validation**
+
+...
+
+---
+
+### `path/to/another-file.ts`
+
+#### Preserve explicit false filter values
+
+**Lines:** 58-61  
+**Severity:** Medium
+
+**Review comment**
+
+...
+
+## General PR comments
+
+Include only findings that cannot be placed on a specific line.
+
+## Missing tests
+
+List missing scenarios and associate each scenario with the relevant file,
+function, endpoint, or flow.
+
+## Questions
+
+List unresolved questions that depend on business intent.
+
+## Positive observations
+
+Mention relevant strengths briefly.
+
+## Review statistics
+
+Report:
+
+- Files reviewed
+- Files with findings
+- Critical findings
+- High findings
+- Medium findings
+- Low findings
+- General comments
+- Questions
+```
+
+## GitHub recommendation mapping
+
+Map the previous recommendation model to GitHub terminology:
+
+| Engineering assessment              | GitHub review   |
+| ----------------------------------- | --------------- |
+| Reject until corrected              | Request changes |
+| Approve after required corrections  | Request changes |
+| Approve with follow-up improvements | Comment         |
+| Approve                             | Approve         |
+
+Do not approve while unresolved Critical or High findings remain.
+
+## Comment quality requirements
+
+Every review comment must be:
+
+* Specific
+* Evidence-based
+* Actionable
+* Attached to the smallest relevant line range
+* Clear about practical impact
+* Clear about the expected correction
+* Free from personal criticism
+* Independent from stylistic preference
+
+Do not write:
+
+```text
+This is wrong.
+```
+
+Write:
+
+```text
+This controller reads `request.backOfficeClient`, while the existing
+`BackofficeSuperAdminGuard` reads `request.backofficeUser`. Because the
+authentication pipeline populates only one of these properties, authorization
+behavior may differ between endpoints.
+```
+
+Do not write:
+
+```text
+Use a guard.
+```
+
+Write:
+
+```text
+Update the existing super-admin guard to consume the canonical authenticated
+context and apply it to both controllers with `@UseGuards`. Add isolated tests
+for missing context, invalid role, and allowed role.
+```
+
+## Root-cause deduplication
+
+Do not produce multiple comments that repeat the same root cause.
+
+Example:
+
+If two controllers duplicate the same authorization policy and an existing
+guard uses the wrong request property:
+
+* Create one primary High finding on the first duplicated policy.
+* List the second controller and guard as related locations.
+* Explain the shared authentication-context defect.
+* Recommend one consolidated correction.
+
+Create separate findings only when:
+
+* One controller has an additional independent defect.
+* The guard has a separate security flaw.
+* The authentication strategy injects unvalidated claims.
+* Different corrections or validation strategies are required.
+
+The number of comments must reflect distinct engineering problems, not the
+number of files containing the same symptom.
+
+## Review-only mode
+
+The first execution of `staff-pr-review` must remain review-only unless the
+developer explicitly requests corrections.
+
+Do not:
+
+* Modify files
+* Apply suggestions automatically
+* Format code
+* Add tests
+* Change configuration
+* Update dependencies
+
+After the developer requests corrections:
+
+1. Apply the agreed changes.
+2. Run the applicable validations.
+3. Execute `staff-pr-review` again.
+4. Use the same GitHub-style output format.
+5. Mark previous findings as resolved, partially resolved, or unresolved.
+6. Report any new findings introduced by the corrections.
