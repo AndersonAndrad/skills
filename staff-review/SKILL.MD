@@ -1260,3 +1260,407 @@ After the developer requests corrections:
 4. Use the same GitHub-style output format.
 5. Mark previous findings as resolved, partially resolved, or unresolved.
 6. Report any new findings introduced by the corrections.
+
+# Staff Review Finding Presentation
+
+The final Staff Review must organize findings by severity and make each finding
+immediately understandable without requiring the reader to inspect the code
+first.
+
+## Severity sections
+
+Use this exact severity order:
+
+1. Critical
+2. High
+3. Medium
+4. Low
+
+Each severity section must restart its numbering from `1`.
+
+Example:
+
+```text
+🔴 CRITICAL (2)
+
+1. Missing authentication validation
+2. Duplicate transaction processing
+
+🟠 HIGH (3)
+
+1. Hardcoded provider configuration
+2. Missing timeout
+3. Incorrect error propagation
+
+🟡 MEDIUM (2)
+
+1. Ambiguous variable naming
+2. Missing edge-case coverage
+
+🔵 LOW (1)
+
+1. Minor duplication
+```
+
+Do not continue numbering between severity groups.
+
+Incorrect:
+
+```text
+CRITICAL
+1. Finding
+
+HIGH
+2. Finding
+3. Finding
+
+MEDIUM
+4. Finding
+```
+
+Correct:
+
+```text
+CRITICAL
+1. Finding
+
+HIGH
+1. Finding
+2. Finding
+
+MEDIUM
+1. Finding
+```
+
+## Finding structure
+
+Every finding must follow this structure:
+
+```text
+1. Finding title
+
+Brief description explaining what is wrong and why the reviewer considers it
+a problem.
+
+- Location: path/to/file.ext:line
+- Impact: practical consequence
+- Recommendation: concrete correction
+```
+
+The description must appear immediately below the title.
+
+It must explain:
+
+* What is currently happening
+* Why that behavior is problematic
+* Why the suggested correction improves the implementation
+
+Keep this explanation concise.
+
+Prefer approximately 1 to 3 sentences.
+
+Do not repeat the same information from Impact or Recommendation.
+
+## Example
+
+Use:
+
+```text
+1. Missing nil validation for MessagingService
+
+The constructor validates `EmploymentRepository`, but accepts a nil
+`MessagingService`. This creates an inconsistent dependency contract and allows
+the application to start successfully only to panic later when messaging is
+used.
+
+- Location: `impl.go:26`
+- Impact: Runtime panic when the invite flow attempts to send a message.
+- Recommendation: Validate `params.MessagingService` in the constructor and fail
+  fast when the dependency is missing.
+```
+
+Avoid:
+
+```text
+1. Missing nil validation for MessagingService
+- impl.go:26
+- Can panic
+- Add nil check
+```
+
+The second format communicates the symptom but not the engineering reasoning.
+
+## Description quality
+
+The short explanation should answer:
+
+> What is wrong here and why should I care?
+
+Examples:
+
+### Hardcoded value
+
+```text
+1. Hardcoded sender phone number
+
+The sender number is embedded directly in the use case even though it belongs
+to external messaging configuration. This couples business logic to one
+environment and makes testing or provider changes harder.
+
+- Location: `send_employee_invite.go:52`
+- Impact: Environment changes require code modifications and tests depend on
+  production-like configuration.
+- Recommendation: Inject the sender number through configuration or the
+  messaging adapter.
+```
+
+### Duplicate authorization
+
+```text
+1. Duplicated super-admin authorization rule
+
+The same role check is implemented directly in multiple controllers instead of
+using one authorization policy. These copies can diverge over time and already
+make it harder to know which authenticated request context is authoritative.
+
+- Location: `webhook-audit.controller.ts:42-47`
+- Related: `balance-audit.controller.ts:31-36`
+- Impact: Different endpoints may enforce the same permission differently.
+- Recommendation: Centralize the policy in a dedicated guard using the canonical
+  authenticated context.
+```
+
+### Missing test
+
+```text
+1. Missing regression coverage for duplicate processing
+
+The implementation prevents duplicate processing, but no test proves that two
+requests for the same operation cannot create duplicate side effects. A future
+refactor could remove the protection without failing the test suite.
+
+- Location: `payment.service.spec.ts`
+- Impact: Duplicate financial or external operations may regress unnoticed.
+- Recommendation: Add a regression test executing the same logical operation
+  twice and assert that the side effect occurs only once.
+```
+
+## Location format
+
+Prefer:
+
+```text
+- Location: `path/to/file.go:52`
+```
+
+For ranges:
+
+```text
+- Location: `path/to/file.ts:42-47`
+```
+
+For findings spanning multiple files:
+
+```text
+- Location: `path/to/primary-file.ts:42-47`
+- Related: `path/to/second-file.ts:31-36`
+- Related: `path/to/guard.ts:18-25`
+```
+
+Do not duplicate the same root finding once for every affected file.
+
+## Impact
+
+Impact must describe the practical consequence.
+
+Good:
+
+```text
+- Impact: A missing dependency causes a runtime panic when the invite flow is
+  executed.
+```
+
+Bad:
+
+```text
+- Impact: Bad practice.
+```
+
+Good:
+
+```text
+- Impact: Future endpoints may enforce the same role using different request
+  properties, producing inconsistent authorization behavior.
+```
+
+Bad:
+
+```text
+- Impact: Violates DRY.
+```
+
+Engineering principles such as DRY, SOLID, or clean architecture may help
+explain a finding, but they are not themselves the practical impact.
+
+## Recommendation
+
+Recommendations must describe the expected correction, not only the desired
+result.
+
+Prefer:
+
+```text
+- Recommendation: Move the sender number to messaging configuration and inject
+  it through the use-case dependencies.
+```
+
+Avoid:
+
+```text
+- Recommendation: Refactor.
+```
+
+Prefer:
+
+```text
+- Recommendation: Add a `BackofficeSuperAdminGuard` that reads the canonical
+  authenticated context and replace both inline role checks with
+  `@UseGuards(...)`.
+```
+
+Avoid:
+
+```text
+- Recommendation: Use a guard.
+```
+
+## Optional validation
+
+When the correction requires important verification, add:
+
+```text
+- Validation: Add an isolated guard test covering missing context, unauthorized
+  role, and super-admin access.
+```
+
+Do not add a Validation line to every trivial finding.
+
+Use it primarily for:
+
+* Security
+* Business rules
+* Regression risks
+* Concurrency
+* External integrations
+* Financial behavior
+* Complex bug fixes
+
+## Output template
+
+Use the following final structure:
+
+```text
+# Staff Review - Findings 📋
+
+The complete review found X findings.
+
+🔴 CRITICAL (X)
+
+1. Finding title
+
+Short explanation of what is wrong and why the correction is recommended.
+
+- Location: `path/file.ts:10-15`
+- Impact: ...
+- Recommendation: ...
+- Validation: ...
+
+2. Finding title
+
+Short explanation.
+
+- Location: ...
+- Impact: ...
+- Recommendation: ...
+
+---
+
+🟠 HIGH (X)
+
+1. Finding title
+
+Short explanation.
+
+- Location: ...
+- Impact: ...
+- Recommendation: ...
+
+2. Finding title
+
+...
+
+---
+
+🟡 MEDIUM (X)
+
+1. Finding title
+
+...
+
+---
+
+🔵 LOW (X)
+
+1. Finding title
+
+...
+```
+
+Omit severity sections with zero findings unless the developer explicitly asks
+to show them.
+
+## GitHub inline review compatibility
+
+When the full GitHub-style review format is requested, preserve the same short
+description immediately below the finding title.
+
+Example:
+
+```text
+### `send_employee_invite.go`
+
+#### Hardcoded sender phone number
+
+**Lines:** 52-55  
+**Severity:** High
+
+The sender number is embedded in business logic even though it belongs to
+messaging configuration. This couples the use case to one environment and makes
+testing or provider changes harder.
+
+**Impact**
+
+...
+
+**Suggested correction**
+
+...
+```
+
+The summary format and GitHub inline format must communicate the same finding
+and severity.
+
+## Anti-patterns
+
+Do not:
+
+* Continue numbering between severity groups.
+* Provide only a title and bullet list with no explanation.
+* Repeat the Impact text word-for-word in the description.
+* Use principles such as DRY as the only impact.
+* Write long essays under each finding.
+* Hide the practical consequence.
+* Recommend vague actions such as "refactor", "improve", or "fix".
+* Duplicate one root cause across multiple findings only because several files
+  contain the symptom.
+* Mix Critical, High, Medium, and Low findings in the same numbered sequence.
