@@ -5,7 +5,31 @@ description: Reviews new or modified code for readability, maintainability, dupl
 
 # Code Quality Review
 
+Before implementing changes from this skill, follow the approval gate in
+`../implementation-plan/SKILL.md`. Read-only analysis and review may proceed
+without implementation approval.
+
 Review all code created or modified during the current task.
+
+## Implementation language and documentation review
+
+Write all new code, identifiers, comments, docstrings, and technical documentation
+in English. Preserve established business-rule names and external API field
+names, values, and responses exactly when translation would change their meaning
+or contract. Do not translate persisted identifiers or localized product copy
+as an incidental cleanup.
+
+Application documentation belongs to the developer. During implementation,
+review existing comments, docstrings, API descriptions, and relevant guides for
+stale claims, unclear contracts, and missing rationale for non-obvious behavior.
+Report concrete gaps and their impact for the developer to address. Do not add
+or rewrite documentation automatically, or require comments for obvious code.
+Author documentation only when the user explicitly includes it in the task.
+
+This does not exempt executable schemas, validators, types, or configuration
+from correctness: update behavior-bearing code within the implementation scope.
+The explicitly required changelog and version metadata remain maintained by
+`release-changelog`. Review reports are not application documentation.
 
 ## Project consistency
 

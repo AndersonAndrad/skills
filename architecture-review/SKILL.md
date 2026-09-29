@@ -5,6 +5,10 @@ description: Reviews code changes for separation of concerns, dependency directi
 
 # Architecture Review
 
+Before implementing changes from this skill, follow the approval gate in
+`../implementation-plan/SKILL.md`. Read-only analysis and review may proceed
+without implementation approval.
+
 Follow the architecture already established by the project unless the task
 explicitly requires changing it.
 
@@ -99,6 +103,40 @@ Before changing a public contract, inspect:
 - External consumers
 
 Avoid breaking changes unless explicitly approved.
+
+## Persistence, migrations, and data integrity
+
+Apply this review when schemas, stored data, writes, transactions, retries, or
+message delivery change. Trace the real database and integration behavior,
+including existing records and older application instances.
+
+- Prefer expand-and-contract changes when old and new versions coexist. Check
+  schema defaults, nullability, constraints, indexes, and serialization before
+  removing or renaming fields. Do not edit already applied migrations.
+- Assess migration locks, table scans, backfill duration, resource pressure,
+  partial failure, and restartability using realistic data characteristics.
+  Keep backfills bounded and resumable where needed.
+- Define transaction boundaries and invariants. Check isolation, lost updates,
+  uniqueness enforcement, and concurrent requests; application-level
+  check-then-write alone cannot guarantee uniqueness.
+- For retries and duplicate deliveries, verify idempotency-key scope, atomic
+  claiming, replay results, expiration, and concurrent duplicate handling.
+  Ensure retryable failures do not duplicate external side effects.
+- A database transaction does not roll back a remote API call or published
+  message. Evaluate the project's existing outbox, reconciliation, or
+  compensation approach when consistency crosses system boundaries; do not
+  introduce distributed machinery without a concrete need.
+- Assess rollout order, mixed-version readers/writers, and recovery before
+  destructive steps. Distinguish code rollback from data recovery; a down
+  migration alone does not prove deleted data can be restored. Identify
+  irreversible steps and the required restore or forward-repair strategy.
+
+Require applicable integration tests using isolated persistence for old-record
+compatibility, migration/backfill behavior, rollback or recovery, partial
+failure, and concurrency. Use mocked external services for delivery failures.
+Do not run migrations on shared or production data without authorization.
+Report missing operational guidance to the developer; documentation ownership
+does not waive the need to establish safe migration and recovery behavior.
 
 ## Abstractions
 

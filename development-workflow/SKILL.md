@@ -1,21 +1,42 @@
 ---
 name: development-workflow
-description: Mandatory development workflow for implementing features, fixing bugs, refactoring code, changing behavior, creating endpoints, modifying business rules, or editing production code. Use before, during, and after every code implementation.
+description: Coordinate explicit plan approval, safe implementation, Staff review, and final validation for features, fixes, refactors, configuration, dependencies, migrations, documentation, and skill changes. Use before, during, and after every implementation.
 ---
 
 # Development Workflow
 
-Follow this workflow whenever creating, modifying, refactoring, or removing
-production code.
+Follow this workflow whenever implementing changes to code, configuration,
+dependencies, migrations, documentation, or skills. Read-only reviews and
+investigation do not themselves authorize implementation.
 
 This workflow is mandatory. Do not consider an implementation complete until
 all applicable validation steps have been performed.
 
-## 1. Understand the task
+## Preserve the working tree
 
-Before editing code:
+Before editing, inspect staged, unstaged, and untracked changes and record the
+starting state. Treat existing work as intentional. Read overlapping edits and
+adapt the patch without replacing the developer's changes. Do not reset, clean,
+stash, restore, stage, or unstage existing work without explicit authorization.
+Avoid whole-file rewrites when a targeted edit can preserve unrelated content.
+If concurrent edits appear, reread the affected content before applying changes.
+Ask only when overlapping intentions cannot be reconciled safely; continue
+independent work while that conflict is unresolved.
 
-1. Restate the expected behavior internally.
+Separate pre-existing failures from regressions introduced by this task.
+A dirty working tree alone is not a reason to stop or request approval.
+
+## 1. Plan and obtain approval
+
+Before editing any deliverable, apply `implementation-plan` from
+`../implementation-plan/SKILL.md`. Investigate read-only, present the current
+plan with alternatives, benefits, drawbacks, and risks, and wait for explicit
+developer approval. After approval, record its evidence and acknowledged risks
+in `CHANGE_LOG.md` before implementation. Never infer approval from silence.
+
+The investigation includes:
+
+1. Apply `requirements-review` and define observable acceptance criteria.
 2. Identify the affected modules, files, interfaces, and integrations.
 3. Inspect existing implementations for similar behavior.
 4. Identify existing project conventions.
@@ -57,6 +78,10 @@ Avoid:
 
 ## 4. Implement incrementally
 
+Start only after the approved plan and evidence are recorded. A material scope
+or risk change returns to `implementation-plan` before dependent implementation.
+Do not treat approval as a waiver of unresolved Critical or High findings.
+
 During implementation:
 
 1. Follow existing project patterns.
@@ -68,52 +93,58 @@ During implementation:
 7. Avoid exposing secrets or sensitive information.
 8. Add or update tests with the implementation.
 
-## 5. Apply specialized validations
+## 5. Apply the implementation policies
 
-After implementing, apply all relevant project skills:
+Apply `code-quality` for English code and documentation review, `testing` for
+new behavior, `security-review` for every changed flow, and
+`frontend-user-experience` for responsive screens when applicable. Apply
+architecture and error-handling reviews where relevant. Review public contract
+documentation with `api-documentation` when affected; leave authoring to the
+developer unless explicitly requested.
 
-- `code-quality`
-- `security-review`
-- `testing`
-- `architecture-review`
-- `error-handling`
-- `final-validation`
+Use the risk-based review depth in `staff-pr-review`. Assess every mandatory
+review dimension for applicability, then investigate affected dimensions in
+depth. Reuse evidence across skills rather than issuing duplicate checklists or
+findings. Small changes still require the complete Staff review and applicable
+checks, but do not justify unrelated investigations.
 
-A specialized validation may be skipped only when it is clearly not applicable.
-When skipped, state why in the final report.
+Apply `release-changelog` to update `CHANGE_LOG.md` and the application version
+before reviewing the complete change.
 
-## 6. Validate the implementation
+## 6. Format, lint, and review
 
-Run the commands available in the project when applicable:
+Apply `lint-and-static-analysis`: discover and run the project's formatter and
+lint or equivalent checks across the configured project scope. Inspect all
+automatic changes. Report unavailable tooling and pre-existing failures.
 
-1. Formatter
-2. Linter
-3. Type checker
-4. Unit tests
-5. Integration tests
-6. Build
-7. Application-specific validation
+After implementation and formatting, load `staff-pr-review` from
+`../staff-review/SKILL.md` and review the complete current diff, including new
+files, tests, documentation, version metadata, and formatting changes. The review
+itself is read-only. Report findings to the user using its host-specific format.
 
-Never claim that a command passed unless it was actually executed successfully.
+Correct findings within the authorized implementation scope in a separate step.
+Review the entire diff again after corrections, confirm resolution, and check
+for new risks. Unresolved Critical or High findings block final validation.
 
-If execution is impossible, clearly report:
+## 7. Final validation
 
-- Which command was not executed
-- Why it could not be executed
-- What remains unverified
+Only after the review gate, apply `final-validation` and run the applicable
+format check, lint, type check, unit tests, mocked end-to-end tests, integration
+tests, build, and project-specific checks. Any subsequent modification requires
+another complete Staff review before final validation is repeated.
 
-## 7. Review the final diff
+Never claim a command passed unless it actually succeeded. Report missing tools,
+failed checks, and unverified behavior.
 
-Before finishing:
+## Commit ownership
 
-1. Inspect the complete diff.
-2. Remove accidental changes.
-3. Remove debug code and temporary files.
-4. Check for hardcoded values.
-5. Check for commented-out code.
-6. Check for unnecessary formatting changes.
-7. Confirm that tests cover the changed behavior.
-8. Confirm that no secrets were added.
+AI agents must never create commits, including amend operations or commands
+that implicitly commit. The user alone creates commits. A request to commit
+means preparing an English commit-message suggestion and handing it to the
+user; do not execute the commit. Follow the repository's established message
+convention, or Conventional Commits when none exists. Never generate Portuguese
+commit messages. Version updates must not invoke commands that create commits
+or tags automatically.
 
 ## 8. Report completion
 
@@ -133,4 +164,14 @@ Describe remaining risks, assumptions, skipped validations, or unverified
 behavior.
 
 Do not say that the task is fully validated when relevant checks were skipped
-or failed.
+or failed. Identify remaining developer-owned documentation work separately
+from implementation defects and validation failures.
+
+## Improve the skills from evidence
+
+After real tasks expose a missed defect, false positive, or conflicting rule,
+identify the responsible skill and propose the smallest correction supported by
+that evidence. Do not silently edit installed skills during application work.
+When skill maintenance is requested, use a realistic scenario and check whether
+the new instruction resolves the issue without expanding unrelated scope.
+Prefer correcting an existing rule over adding another overlapping skill.

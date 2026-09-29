@@ -5,6 +5,10 @@ description: Reviews application error handling, failure propagation, external d
 
 # Error Handling
 
+Before implementing changes from this skill, follow the approval gate in
+`../implementation-plan/SKILL.md`. Read-only analysis and review may proceed
+without implementation approval.
+
 Expected failures must be handled deliberately.
 
 ## Failure identification

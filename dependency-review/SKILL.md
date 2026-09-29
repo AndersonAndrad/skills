@@ -1,3 +1,14 @@
+---
+name: dependency-review
+description: Reviews direct Node.js dependency pinning, lockfile consistency, update compatibility, and justified library version ranges. Use when adding or updating dependencies or reviewing dependency declarations.
+---
+
+# Dependency Review
+
+Before implementing changes from this skill, follow the approval gate in
+`../implementation-plan/SKILL.md`. Read-only analysis and review may proceed
+without implementation approval.
+
 ## Exact dependency version pinning
 
 Direct dependencies must use exact versions.
@@ -179,7 +190,7 @@ Even in those cases:
 
 * Use the narrowest justified range.
 * Do not use wildcards.
-* Document the supported versions.
+* Verify that supported versions are documented; report gaps to the developer.
 * Test the minimum and maximum supported versions when applicable.
 
 ### Review checks

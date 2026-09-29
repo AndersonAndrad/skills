@@ -1,4 +1,15 @@
-### Authentication context consistency
+---
+name: critical-code-review
+description: Reviews authentication-context consistency and reusable authorization policies for security-critical changes. Use when authentication or authorization code changes; complements the full Staff PR review.
+---
+
+# Critical Code Review
+
+Before implementing changes from this skill, follow the approval gate in
+`../implementation-plan/SKILL.md`. Read-only analysis and review may proceed
+without implementation approval.
+
+## Authentication context consistency
 
 For every authentication or authorization change:
 

@@ -1,7 +1,7 @@
 ## Mandatory Staff PR review
 
 After implementation and before final validation, load and apply the
-`staff-pr-review` skill to the complete current diff.
+`staff-pr-review` skill at `staff-review/SKILL.md` to the complete current diff.
 
 The review must evaluate:
 
@@ -171,3 +171,40 @@ compatibility analysis and must use the narrowest justified version range.
 
 Any newly added or updated direct dependency using `^`, `~`, a wildcard, or an
 open-ended range is a validation finding and must be corrected before approval.
+
+
+## Mandatory implementation policies
+
+Before any implementation, apply `implementation-plan/SKILL.md`: investigate
+read-only, present a concrete plan with alternatives, benefits, drawbacks, and
+identified risks, then wait for explicit approval of that revision. Record only
+actual approval and acknowledged risks in `CHANGE_LOG.md`, with approver
+attribution and evidence, before implementing. Preserve approved decisions as
+append-only history. Material changes require renewed approval; silence and
+approval of another revision are not consent. Approval never waives unresolved
+Critical or High findings. Never invent retrospective informed consent.
+
+Apply `development-workflow/SKILL.md` for every implementation. Its linked
+skills define English code and comments with business/external-contract
+exceptions, developer-owned documentation, responsive interfaces, automated
+tests with mocked end-to-end integrations, input validation and context-safe
+sanitization, security review, release metadata, formatting, and lint
+requirements.
+
+Preserve existing working-tree edits and staging state. Define testable
+acceptance criteria before implementation. Scale Staff review depth to affected
+risks while assessing every required dimension and preserving the complete-diff
+review and Critical/High gate. Reuse findings across skills.
+
+Application documentation is the developer's responsibility. Skills review
+comments and contracts and report gaps; they do not author documentation unless
+explicitly requested. This ownership rule applies to documentation instructions
+in specialized skills too. It does not exempt executable schemas or validators
+from correctness, and it does not remove mandatory changelog/version updates.
+
+Apply `release-changelog/SKILL.md` before Staff review. Maintain `CHANGE_LOG.md`
+and increase the application version in `package.json` when present.
+
+AI agents must never create commits, even when asked to commit. Prepare an
+English message using the project convention or Conventional Commits and leave
+commit execution to the user.

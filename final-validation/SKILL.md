@@ -88,6 +88,52 @@ Do not proceed when:
 Final validation is the last gate, not the only gate.
 
 
+## Implementation policy verification
+
+Confirm English code/comments with preserved business and external contracts,
+reviewed documentation gaps, tests for new behavior with mocked end-to-end
+boundaries, responsive verification for UI changes, and input validation and
+sanitization on both frontend and backend where applicable. Confirm security
+review covers every change and no known blocking security findings remain.
+
+Verify `CHANGE_LOG.md` records the planned version, main changes, author, and
+date, and that application and lockfile version metadata agree and progress
+monotonically. Confirm formatter and lint or equivalent checks ran across the
+configured scope and that the complete final diff received Staff review after
+all fixes. No AI-created commit or tag is part of this workflow.
+
+## Scope, ownership, and risk
+
+Confirm existing developer edits and staging state were preserved. Distinguish
+pre-existing failures from new regressions, while keeping known blocking issues
+visible. Verify the depth of Staff review matches the affected risks and that
+migration, integrity, concurrency, and recovery checks were applied when needed.
+
+Evaluate tests against acceptance criteria: they must exercise the real behavior
+under test, use appropriate mock boundaries, and avoid snapshots or coverage
+counts as the only evidence. Record which criteria remain unverified.
+
+Report application-documentation gaps as developer-owned follow-ups; do not
+silently author them. Missing prose alone does not invalidate an otherwise
+validated implementation. A contract that cannot be established safely or a
+concrete security/correctness issue remains subject to the normal blocking gate.
+When documentation was explicitly requested, validate it as part of that task.
+Keep review records internal when the host requires a concise findings-only
+response; do not let this checklist override the Claude Staff output contract.
+
+## Plan and approval evidence
+
+For work governed by `implementation-plan`, confirm explicit approval preceded
+implementation, the audit matches the approved revision, and all material scope
+or risk changes received renewed approval before dependent work. Confirm
+approver attribution is supported, tradeoffs and known risks remain in history,
+and outcomes were appended without rewriting prior acknowledgment.
+
+Missing required approval blocks completion; do not manufacture evidence or
+request retroactive approval as though it preceded implementation. For work
+predating this policy, report the missing contemporaneous record honestly.
+Approval is not evidence that a risk was resolved or that validation passed.
+
 ## Changed behavior
 
 Confirm:
