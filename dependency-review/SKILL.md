@@ -190,7 +190,7 @@ Even in those cases:
 
 * Use the narrowest justified range.
 * Do not use wildcards.
-* Verify that supported versions are documented; report gaps to the developer.
+* Document supported versions for modified ranges using existing project tooling.
 * Test the minimum and maximum supported versions when applicable.
 
 ### Review checks

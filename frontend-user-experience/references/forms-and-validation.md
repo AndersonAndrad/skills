@@ -192,7 +192,9 @@ Avoid:
 - Technical identifiers without explanation
 
 Preserve useful backend validation messages when they are safe and
-understandable.
+understandable. Specific messages apply to documented public validation;
+authentication, registration, and account-recovery flows follow the generic
+responses defined in `../../security-log/SKILL.md`.
 
 Map technical errors to user-friendly messages.
 

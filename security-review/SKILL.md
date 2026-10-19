@@ -109,6 +109,9 @@ Never expose or log:
 - Secrets from environment variables
 
 Use redaction when logging objects that may contain sensitive fields.
+For client-facing error disclosure, account enumeration, and the boundary
+between sanitized responses and internal diagnostics, apply
+`../security-log/SKILL.md` to the affected flows.
 
 ## Injection and unsafe execution
 

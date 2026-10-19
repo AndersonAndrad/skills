@@ -1,6 +1,6 @@
 ---
 name: implementation-plan
-description: Prepare and present an action plan with alternatives, benefits, drawbacks, and risks before any implementation. Require explicit developer approval of the current plan and preserve an evidence-based approval audit in CHANGE_LOG.md before execution. Use for features, fixes, refactors, configuration, dependencies, migrations, documentation, and skill changes.
+description: Prepare and present an action plan with alternatives, benefits, drawbacks, and risks before any implementation. Require explicit developer approval of the current plan and preserve an evidence-based approval audit in CHANGE_LOG.md, when the project has one, before execution. Use for features, fixes, refactors, configuration, dependencies, migrations, documentation, and skill changes.
 ---
 
 # Implementation Plan and Approval
@@ -50,10 +50,11 @@ material risks were identified in the investigated scope, not that none exist.
 
 ## 3. Obtain approval of this revision
 
-Ask the developer to approve or revise the identified plan. Request the approving
-developer's name if it is not explicitly established in the conversation or by
-a trusted authenticated identity. A repository Git author is not proof of who
-approved the plan. Distinguish self-declared identity from verified identity.
+Ask the developer to approve or revise the identified plan. Use the configured
+Git `user.name` as the approver name; the authenticated user identity supplied
+by the AI host may complement it when available. Ask for a name only when
+neither exists. Record the identity basis: Git configuration and host identity
+are attribution sources, not independent proof of who approved.
 
 For material residual risks, ask for explicit acknowledgment of their risk IDs
 as part of the approval. A short confirmation is sufficient only when it
@@ -70,7 +71,9 @@ an automatically selected option nor an approval request is approval evidence.
 ## 4. Record the approved decision before implementation
 
 After approval, apply `release-changelog` to append an approval audit under the
-planned release in `CHANGE_LOG.md`. Record:
+planned release in `CHANGE_LOG.md`. When the project has no `CHANGE_LOG.md`, do
+not create one or record the audit elsewhere; the explicit approval in the
+conversation remains required, and implementation may proceed. Record:
 
 - Plan identifier, revision, objective, scope, and approved steps.
 - Approval timestamp with timezone, separately from the implementation date.

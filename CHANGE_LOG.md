@@ -1,5 +1,132 @@
 # Change Log
 
+## 0.2.0 — Planned
+
+Date: 2026-09-30
+Author: Anderson Andrade
+
+- Make `CHANGE_LOG.md` optional: when a project has no changelog, skip release
+  and approval records instead of creating the file.
+- Use the configured Git `user.name` as changelog author and approver name,
+  optionally complemented by the authenticated AI-host user identity.
+- Transfer documentation authoring to the AI agent using the project's existing
+  documentation tooling; the developer reviews all changes and creates commits.
+- Limit documentation, tests, and corrections to modified behavior; pre-existing
+  content is out of scope unless the user requests it.
+- Integrate the developer-authored `security-log` skill (secure API error
+  responses and sensitive logging) into implementation, Staff review, and final
+  validation, limited to the requested implementation.
+
+### PLAN-002 revision 1 — Approved for implementation
+
+Recorded at: 2026-09-30T09:18:03-03:00 (recording time, not source-message time).
+Change author: Anderson Andrade (Git `user.name`).
+Approver: Anderson Andrade (Git `user.name`, adopted as the approver-name source
+by this plan; not independent identity verification).
+
+Objective: optional changelog, Git-based attribution, and AI-authored
+documentation limited to modified behavior.
+
+Approved steps: update `release-changelog`, `implementation-plan`,
+`api-documentation`, `code-quality`, `development-workflow`, `final-validation`,
+`requirements-review`, `staff-review`, `CLAUDE.md`, and `AGENTS.md`; record this
+plan here; run the complete Staff review and final validation; suggest an
+English commit message without committing.
+
+Alternatives presented: keep always creating the changelog (more traceability,
+unwanted files); keep documentation developer-owned (smaller diffs, stale
+contracts).
+
+Risks presented and acknowledged, with conditions:
+
+- R1 (Medium): projects without a changelog keep approval evidence only in the
+  conversation. Acknowledged.
+- R2 (Low): Git `user.name` does not prove who approved. Acknowledged; condition:
+  the authenticated AI-host user identity may also be used when available.
+- R3 (Medium): a project without documentation tooling could lead to adding
+  one. Condition: add nothing; notify the developer that documentation could not
+  be produced and why.
+- R4 (Low): AI-authored documentation could be inaccurate or expand the diff.
+  Condition: documentation, tests, and corrections cover only modified behavior;
+  existing project content is out of scope unless the user requests it.
+
+Open question presented: whether the `package.json` version still increases
+when no changelog exists. The suggested default (yes, independent bookkeeping)
+was not separately answered; it is applied as the presented default under the
+general approval.
+
+Supersedes for future work: PLAN-ROCKY-001 R2 ("adapt to read-only factual
+review") regarding documentation ownership. The original record is preserved.
+
+Approval evidence, quoted in the original language:
+
+> pode fazer, R2 -> se conseguir pegar o usuário da IA pode ser usado também, R3 -> sim, se não tiver nenhuma ferramenta de documentação não é feito nada apenas notifica o dev que não pode fazer nada e o motivo, R4 -> sim documentação assim como testes e correções é somente de coisas que foram modificadas, o que já existe no projeto já existe no projeto, não é do nosso interesse a menos que o usuário fale
+
+Decision status: Approved for implementation.
+
+#### Amendment 2026-09-30 — Implementation outcome
+
+Implemented within the approved scope. `dependency-review` was also updated
+because it assigned documentation gaps to the developer, which is covered by the
+approved ownership change. Staff review found no Critical or High issues; Low
+findings (pre-existing blockers versus scoped corrections, regression tests for
+affected existing behavior, a missing changelog condition in final validation,
+and line wrapping) were corrected and the complete diff re-reviewed. Validation:
+YAML frontmatter and relative skill links checked by script, and whitespace
+checked with `git diff --check`. No formatter, linter, or executable test suite
+exists in this repository. No commit was created.
+
+### PLAN-003 revision 1 — Approved for implementation, with conditions
+
+Recorded at: 2026-10-01T11:37:21-03:00 (recording time, not source-message time).
+Change author: Anderson Andrade (Git `user.name`).
+Approver: Anderson Andrade (Git `user.name`; attribution source, not independent
+identity verification).
+
+Objective: make `security-log` discoverable and applied during implementation
+and Staff review, without project-wide audits.
+
+Approved steps: add frontmatter, the approval-gate notice, and a scope section
+to `security-log`; reference it from `development-workflow`, `staff-review`,
+`security-review`, `error-handling`, `logging-observability`,
+`final-validation`, the forms reference of `frontend-user-experience`,
+`CLAUDE.md`, and `AGENTS.md`; record under the planned 0.2.0 release without a
+second version increase; run the complete Staff review and final validation.
+
+Alternatives presented: integrate only through other skills without editing
+`security-log` (no discovery, scope conflict remains); merge its content into
+`security-review` (single location, loses the standalone skill).
+
+Risks presented:
+
+- R1 (Medium): project-wide scanning during small tasks. Condition: apply only
+  to the requested implementation; never inspect the whole project unless the
+  developer explicitly requests it and accepts the presented risks.
+- R2 (Medium): generic messages could degrade form UX or break frontend
+  expectations. Mitigation in plan; not explicitly acknowledged.
+- R3 (Low): changing existing error responses could break consumers.
+  Mitigation in plan; not explicitly acknowledged.
+- R4 (Low): overlapping rules across skills could diverge. Condition: other
+  skills reference `security-log` instead of copying its rules.
+
+Approval evidence, quoted in the original language:
+
+> faz a correção do R4 e R1 para que seja feita apenas na implementação que foi solicitada, não deve olhar o projeto todo a menos que o dev tenha solicitado explicitamente e aceite os riscos
+
+Decision status: Approved for implementation.
+
+#### Amendment 2026-10-01 — Implementation outcome
+
+Implemented within the approved scope. In `security-log`, the Implementation
+Workflow steps were also scoped to the requested change, and the impact of
+changing a shared error handler was added to planning; both follow the R1
+condition. Staff review found no Critical or High issues. One Medium finding
+remains open for the developer: the `security-log` primary example sanitizes a
+`CreateUser` "email is required" validation, while its Validation Errors
+section allows documented validations to stay descriptive. The skill body was
+not changed beyond the approved edits. Validation: frontmatter, skill and
+reference links, and whitespace were checked. No commit was created.
+
 ## 0.1.0 — Planned
 
 Date: 2026-09-28

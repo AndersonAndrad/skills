@@ -19,12 +19,11 @@ names, values, and responses exactly when translation would change their meaning
 or contract. Do not translate persisted identifiers or localized product copy
 as an incidental cleanup.
 
-Application documentation belongs to the developer. During implementation,
-review existing comments, docstrings, API descriptions, and relevant guides for
-stale claims, unclear contracts, and missing rationale for non-obvious behavior.
-Report concrete gaps and their impact for the developer to address. Do not add
-or rewrite documentation automatically, or require comments for obvious code.
-Author documentation only when the user explicitly includes it in the task.
+The AI agent authors documentation for modified behavior using the project's
+existing tooling, as defined in `api-documentation`. Keep comments, docstrings,
+API descriptions, and relevant guides accurate for the modified code, and add
+rationale for non-obvious behavior. Do not require comments for obvious code or
+rewrite documentation of untouched behavior unless the user requests it.
 
 This does not exempt executable schemas, validators, types, or configuration
 from correctness: update behavior-bearing code within the implementation scope.

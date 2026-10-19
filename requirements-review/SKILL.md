@@ -33,8 +33,8 @@ Ask only about uncertainty that materially changes safety,
 business behavior, or compatibility. Do not invent requirements.
 
 Update criteria when the user changes scope, then compare the final behavior
-and validation evidence against them. Documentation gaps are developer-owned
-follow-ups unless they make the actual contract unsafe or impossible to verify.
+and validation evidence against them. Documentation for modified contracts is
+part of the deliverable when the project has documentation tooling.
 
 ## 1. Understand the requested outcome
 

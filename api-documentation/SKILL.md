@@ -1,30 +1,36 @@
 ---
 name: api-documentation
-description: Review API and application documentation against actual contracts, identify stale descriptions and missing consumer guidance, and report gaps for the developer. Use when endpoints, DTOs, integrations, configuration, or public behavior change. Author documentation only when explicitly requested.
+description: Author and review API and application documentation for modified contracts using the project's existing documentation tooling, such as Swagger/OpenAPI. Use when endpoints, DTOs, integrations, configuration, or public behavior change. Notify the developer when no documentation tooling exists.
 ---
 
-# API Documentation Review
+# API Documentation
 
 Before implementing changes from this skill, follow the approval gate in
 `../implementation-plan/SKILL.md`. Read-only analysis and review may proceed
 without implementation approval.
 
-Application documentation is the developer's responsibility. This skill checks
-whether consumers can safely understand a changed contract; it does not create
-or rewrite documentation as part of ordinary feature implementation.
+The AI agent authors documentation for the behavior it modifies, as part of
+the approved implementation. The developer reviews the changes and creates
+commits; documentation is not left as a developer follow-up.
 
 ## Ownership and scope
 
-Review existing comments, API metadata, schemas, examples, and relevant guides.
-Report inaccuracies, missing explanations, and their practical impact. Do not
-add a documentation tool, generate checked-in guides, or insert comments merely
-to satisfy a checklist. A missing explanation is a developer follow-up unless
-it exposes a concrete unsafe contract or prevents meaningful verification.
+Document only what the current task created or modified. Existing documentation
+for untouched behavior is out of scope unless the user explicitly requests it;
+do not backfill, reformat, or rewrite it. Update existing documentation only
+where the modification made it inaccurate.
 
-An explicit request to write documentation authorizes that work within the
-requested scope. In that case use English, preserve business terminology and
-external API names/values, and follow existing project tooling. Do not treat
-invoking a review as authorization to write documentation.
+Use the project's existing documentation system, such as Swagger/OpenAPI
+decorators or specs, AsyncAPI, GraphQL schema descriptions, or project guides,
+and follow its established conventions. Write in English, preserving business
+terminology and external API names/values.
+
+When the project has no documentation tooling, do not add a tool, dependency,
+or new documentation format. Produce no documentation and notify the developer
+that the modified contract could not be documented and why.
+
+Add explanatory comments only for non-obvious constraints, side effects, or
+rationale in modified code; do not narrate self-explanatory code.
 
 Executable validation schemas, types, serializers, and configuration remain
 implementation responsibilities even when they also generate documentation.
@@ -40,13 +46,13 @@ which contract is authoritative. Do not assume that prose or static types prove
 runtime behavior. When intent is genuinely ambiguous, report the uncertainty
 rather than inventing a contract or changing code to fit stale prose.
 
-Identify the existing documentation system, such as OpenAPI, AsyncAPI, GraphQL
-schema descriptions, or project guides. Review only the sections affected by the
-change; do not require every possible documentation field for every endpoint.
+Identify the existing documentation system before writing. Document and review
+only the sections affected by the change; do not require every possible
+documentation field for every endpoint.
 
-## Review criteria
+## Content criteria
 
-Check applicable consumer-facing details:
+Cover the applicable consumer-facing details of the modified contract:
 
 - Purpose, actors, prerequisites, authentication method, permissions, tenant
   boundaries, ownership, and administrative restrictions.
@@ -90,26 +96,24 @@ when the implementation itself is correct.
 
 Run applicable existing contract checks, schema validation, example validation,
 or documentation generation in a temporary location when supported. Do not
-publish output or overwrite developer-authored artifacts during a review.
-Inspect generated output before relying on it. A large snapshot alone does not
-prove a contract; verify relevant semantics against validators and consumers.
+publish output externally. Inspect generated output before relying on it. A
+large snapshot alone does not prove a contract; verify relevant semantics
+against validators and consumers.
 
-Do not add dependencies merely to perform this review. Report unavailable tools
-and unverified behavior. Read-only validation may identify work for the developer
-without forcing automatic documentation edits.
+Do not add dependencies to author or validate documentation. Report unavailable
+tools and unverified behavior.
 
 ## Findings and handoff
 
-For each distinct gap, identify the incorrect or missing contract information,
-the supporting behavior, why a consumer or maintainer could be misled, and the
-recommended correction and validation. Classify severity by practical impact;
-do not make missing prose automatically Critical or High.
+Report what documentation was added or updated and what validation actually
+ran. When documentation could not be produced, state the reason, such as missing
+tooling or an unresolved contract question.
+
+During review, for each distinct gap in modified documentation, identify the
+incorrect or missing contract information, the supporting behavior, why a
+consumer or maintainer could be misled, and the correction. Classify severity by
+practical impact; do not make missing prose automatically Critical or High.
 
 When included in Staff review, use `../staff-review/SKILL.md` for presentation
 and deduplication. In Claude, use only Category, Problem, and Description, without
 file locations. Separate documented defects from questions about unknown intent.
-If the review found no material gaps, say so without claiming authoring occurred.
-
-For explicitly requested authoring, update only the authorized material and
-report what changed and what validation actually ran. The developer retains
-ownership of the documentation.

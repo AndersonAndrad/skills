@@ -11,6 +11,9 @@ without implementation approval.
 
 Expected failures must be handled deliberately.
 
+Apply `../security-log/SKILL.md` to decide what affected error responses may
+expose externally and what remains in internal logs.
+
 ## Failure identification
 
 Identify failures from:

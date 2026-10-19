@@ -15,6 +15,9 @@ Tests must validate behavior, not merely increase coverage.
 
 Every new executable behavior must have automated tests delivered with it,
 including validation, guards, policies, error paths, and reusable helpers.
+Test only what the task created or modified, including existing behavior the
+change affects; do not add tests for untouched pre-existing behavior unless the
+user requests it.
 Prioritize unit tests, then mocked end-to-end coverage for user journeys, and
 integration tests for real framework, persistence, and adapter contracts.
 Choose the levels that prove the behavior; priority does not justify omitting

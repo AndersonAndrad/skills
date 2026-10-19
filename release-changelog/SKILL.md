@@ -1,15 +1,22 @@
 ---
 name: release-changelog
-description: Update CHANGE_LOG.md and application version metadata for each implementation, preparing an auditable next release without creating commits or tags. Use before Staff review and final validation.
+description: Update an existing CHANGE_LOG.md and application version metadata for each implementation, preparing an auditable next release without creating commits or tags. Skip changelog records when the project has no CHANGE_LOG.md. Use before Staff review and final validation.
 ---
 
 # Release Changelog
 
 For every implementation, after the developer approves the current plan under
-`implementation-plan`, create or update the root `CHANGE_LOG.md` in English
-with the intended post-commit application version, principal changes, author,
-and change date in YYYY-MM-DD format. Preserve historical entries. Describe an
-uncommitted release as planned, never as already committed or deployed.
+`implementation-plan`, update the root `CHANGE_LOG.md` in English with the
+intended post-commit application version, principal changes, author, and change
+date in YYYY-MM-DD format. Preserve historical entries. Describe an uncommitted
+release as planned, never as already committed or deployed.
+
+## Changelog presence
+
+Only maintain a changelog that already exists. When the project has no root
+`CHANGE_LOG.md`, do not create it and do not write release or approval records
+anywhere else; state in the completion report that no changelog exists. Version
+metadata in an existing `package.json` still follows the rules below.
 
 ## Determine the next version
 
@@ -32,15 +39,17 @@ existing package manager without dependency upgrades. Respect independent
 workspace releases; do not bump unrelated packages. Avoid lifecycle commands
 that create commits or tags. Do not add a package manifest to a non-Node project.
 
-Without version metadata or release history, establish `0.1.0` as an explicitly
-planned initial version in `CHANGE_LOG.md`. Otherwise use the existing source
-of version truth. Ask only when competing sources cannot be reconciled safely.
+Use the existing source of version truth. When an existing `CHANGE_LOG.md` has
+no release history and no other version metadata exists, establish `0.1.0` as
+an explicitly planned initial version in it. Ask only when competing sources
+cannot be reconciled safely.
 
 ## Attribution and content
 
-Use the author explicitly supplied by the user or the configured repository Git
-identity; never invent an author. If neither exists, request attribution before
-finalizing the entry. Use the current date in the user's/project's timezone.
+Use the configured Git `user.name` as the author name. The authenticated user
+identity supplied by the AI host may complement it when available; never invent
+an author. If neither exists, request attribution before finalizing the entry.
+Use the current date in the user's/project's timezone.
 
 Each entry must include:
 
@@ -50,17 +59,18 @@ Each entry must include:
 - Main additions, fixes, and compatibility changes.
 
 Changelog and version updates are explicitly required release bookkeeping and
-remain automated. Application documentation and explanatory comments belong to
-the developer: report gaps under `code-quality` instead of authoring them by
-default. Do not confuse a release summary with complete application documentation.
+remain automated. Application documentation for modified behavior is authored by
+the AI agent under `api-documentation`. Do not confuse a release summary with
+complete application documentation.
 
 ## Approval audit and release summary
 
-Use `../implementation-plan/SKILL.md` as the source of truth for the approval
-record schema. Append the approved plan, presented benefits/drawbacks, risks,
-approver identity basis, and faithful approval evidence before implementing it.
-Do not record a proposed or rejected plan as approved, infer acknowledgment from
-Git configuration, or invent prior informed consent.
+When `CHANGE_LOG.md` exists, use `../implementation-plan/SKILL.md` as the
+source of truth for the approval record schema. Append the approved plan,
+presented benefits/drawbacks, risks, approver identity basis, and faithful
+approval evidence before implementing it. Do not record a proposed or rejected
+plan as approved, infer acknowledgment from Git configuration, or invent prior
+informed consent.
 
 Keep approved decisions append-only even while the release summary is planned.
 Record later discoveries and validation outcomes as dated amendments, with
@@ -72,7 +82,8 @@ auditable decision history.
 
 ## Review and validation
 
-Include the changelog and all version changes in the complete Staff review.
+Include the changelog, when present, and all version changes in the complete
+Staff review.
 Verify monotonic progression against the baseline, agreement between applicable
 manifests and locks, accurate attribution/date, and preservation of history.
 Do not create commits or tags. Offer an English commit-message suggestion only

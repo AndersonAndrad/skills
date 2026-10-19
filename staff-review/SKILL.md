@@ -41,6 +41,9 @@ risk, not just line count.
   require evidence for isolation, retries, rollout, and recovery. Apply
   `../architecture-review/SKILL.md` for the persistence checklist and
   `../security-review/SKILL.md` for authentication and authorization tracing.
+- Changes to error responses, exceptions, validation, account flows, or logging:
+  apply `../security-log/SKILL.md` to the current diff and affected paths to
+  check client-facing disclosure, enumeration, and sensitive data in logs.
 
 Risk level does not change the Critical/High blocking gate or permit skipping
 the full diff. Reuse specialized review evidence and deduplicate root causes.
@@ -51,21 +54,23 @@ pre-existing debt, user-authored pending changes, and defects introduced by this
 task without hiding blockers in the complete diff. Never rewrite unrelated
 work as part of the review.
 
-Documentation authoring belongs to the developer. Report outdated comments,
-unclear contracts, or missing rationale using the host-specific finding format.
-Missing prose alone does not block implementation validation; classify concrete
-unsafe or unverifiable behavior by its actual impact. Explicit documentation
-tasks remain reviewable deliverables, and changelog/version updates still apply.
+Documentation of modified contracts is an AI-authored, reviewable deliverable.
+Report inaccurate or missing documentation for modified behavior using the
+host-specific finding format; do not request documentation for untouched
+behavior. Missing prose alone does not block implementation validation; classify
+concrete unsafe or unverifiable behavior by its actual impact. Changelog updates
+apply only when `CHANGE_LOG.md` exists; version updates still apply.
 
 ## Approval audit review
 
 For work governed by `implementation-plan`, compare the implementation with the
-approved revision and `CHANGE_LOG.md` evidence. Verify presented tradeoffs,
-material risks, identity basis, explicit acknowledgment, conditions, and dated
-amendments. Flag invented consent, erased risk history, or unapproved material
-scope changes. Do not infer awareness from an author name or approval of another
-revision. Approval cannot waive Critical/High findings. For work predating the
-policy, require an honest legacy status rather than fabricated retroactive consent.
+approved revision and `CHANGE_LOG.md` evidence when the project has one. Verify
+presented tradeoffs, material risks, identity basis, explicit acknowledgment,
+conditions, and dated amendments. Flag invented consent, erased risk history, or
+unapproved material scope changes. Do not infer awareness from an author name or
+approval of another revision. Approval cannot waive Critical/High findings. For
+work predating the policy, require an honest legacy status rather than
+fabricated retroactive consent.
 
 ## 1. Review the complete change
 

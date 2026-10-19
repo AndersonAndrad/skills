@@ -19,6 +19,9 @@ The objective is to create useful operational signals without exposing
 sensitive information, creating excessive noise, or increasing infrastructure
 cost unnecessarily.
 
+Apply `../security-log/SKILL.md` for the boundary between sanitized client
+responses and internal diagnostics in affected error flows.
+
 ## 1. Understand the affected operation
 
 Before adding logs or metrics:
